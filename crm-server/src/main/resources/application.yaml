@@ -1,6 +1,9 @@
 spring:
   application:
     name: crm-server
+  # 未显式指定profile时默认走local，避免忘配profile导致${mysql.url}解析失败
+  profiles:
+    default: local
   datasource:
     url: ${mysql.url}
     username: ${mysql.username}
