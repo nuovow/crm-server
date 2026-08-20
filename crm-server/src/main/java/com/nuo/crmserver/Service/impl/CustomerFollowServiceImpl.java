@@ -34,6 +34,7 @@ public class CustomerFollowServiceImpl extends ServiceImpl<CustomerFollowMapper,
             throw new BizException("跟进方式只能是电话、拜访、微信、邮件");
         }
         CustomerFollow follow = BeanUtil.copyProperties(dto, CustomerFollow.class);
+        follow.setFollowType(FollowType.of(dto.getFollowType()).name());
         save(follow);
 
         Customer update = new Customer();
