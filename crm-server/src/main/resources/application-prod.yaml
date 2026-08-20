@@ -1,0 +1,12 @@
+# 生产配置：敏感值全部来自环境变量，密钥不进Git
+mysql:
+  url: ${MYSQL_URL:jdbc:mysql://localhost:3306/crm_server}
+  username: ${MYSQL_USERNAME:root}
+  password: ${MYSQL_PASSWORD}
+jwt:
+  secret: ${JWT_SECRET}
+  expire-hours: 24
+mybatis-plus:
+  configuration:
+    # 生产关闭SQL日志
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
