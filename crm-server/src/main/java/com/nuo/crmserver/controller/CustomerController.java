@@ -1,15 +1,23 @@
 package com.nuo.crmserver.controller;
 
+import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.nuo.crmserver.common.Result;
 import com.nuo.crmserver.dto.CustomerQuery;
 import com.nuo.crmserver.dto.CustomerSaveDTO;
 import com.nuo.crmserver.entity.Customer;
+import com.nuo.crmserver.entity.CustomerExport;
+import com.nuo.crmserver.entity.ImportResult;
 import com.nuo.crmserver.service.CustomerService;
 import com.nuo.crmserver.vo.CustomerVO;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/customer")
@@ -62,5 +70,23 @@ public class CustomerController {
     public Result<Void> deleteCustomer(@PathVariable Long id) {
         customerService.removeById(id);
         return Result.success();
+    }
+
+    @GetMapping("/export")
+    public void exportCustomer(HttpServletResponse response) throws IOException {
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=customers.xlsx");
+        List<CustomerExport> customerExports = customerService.getCustomerList();
+        EasyExcel.write(response.getOutputStream(), CustomerExport.class)
+                .sheet("客户列表")
+                .doWrite(customerExports);
+    }
+
+    /**
+     * Excel批量导入客户：部分成功语义——合法行入库，非法行返回明细
+     */
+    @PostMapping("/import")
+    public Result<ImportResult> importCustomers(@RequestParam("file") MultipartFile file) {
+        return Result.success(customerService.importCustomers(file));
     }
 }
