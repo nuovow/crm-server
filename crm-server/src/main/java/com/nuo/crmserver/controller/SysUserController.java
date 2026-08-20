@@ -40,6 +40,7 @@ public class SysUserController {
         Map<String, Object> info = new HashMap<>();
         info.put("userId", UserContext.getUserId());
         info.put("username", UserContext.getUsername());
+        info.put("permissions", sysUserService.getPermissions(UserContext.getUserId()));
         return Result.success(info);
     }
 }
