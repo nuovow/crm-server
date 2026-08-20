@@ -14,3 +14,11 @@ INSERT INTO customer_contact (customer_id, name, position, phone, wechat, is_pri
 (1962847301234567001, '刘敏', '采购专员', '13901390002', NULL, 0),
 (1962847301234567002, '陈志强', '技术负责人', '13901390003', 'czq_dev', 1),
 (1962847301234567004, '赵雅雯', '行政主管', '13901390004', NULL, 0);
+
+-- 跟进记录测试数据（M1-T04）
+INSERT INTO customer_follow (id, customer_id, contact_id, follow_type, content, next_time) VALUES
+(1962847401234568001, 1962847301234567001, 1962847301234569001, 'PHONE', '电话沟通采购需求，对方计划Q4启动招标', '2026-08-25 10:00:00'),
+(1962847401234568002, 1962847301234567001, NULL, 'VISIT', '上门演示产品，技术总监关注数据安全模块', NULL),
+(1962847401234568003, 1962847301234567002, NULL, 'WECHAT', '微信发报价单，等待对方内部审批', '2026-08-21 14:00:00');
+UPDATE customer SET last_follow_time = '2026-08-20 15:00:00' WHERE id = 1962847301234567001;
+UPDATE customer SET last_follow_time = '2026-08-19 11:00:00' WHERE id = 1962847301234567002;

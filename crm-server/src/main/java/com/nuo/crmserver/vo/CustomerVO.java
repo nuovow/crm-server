@@ -24,6 +24,7 @@ public class CustomerVO {
     private String level;
     private String phone;
     private String remark;
+    private LocalDateTime lastFollowTime;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 
