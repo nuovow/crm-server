@@ -8,6 +8,8 @@ import com.nuo.crmserver.entity.SysUser;
 import com.nuo.crmserver.exceptions.BizException;
 import com.nuo.crmserver.mapper.SysUserMapper;
 import com.nuo.crmserver.service.SysUserService;
+import com.nuo.crmserver.util.JwtUtil;
+import com.nuo.crmserver.vo.LoginVO;
 import com.nuo.crmserver.vo.UserVO;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,11 @@ import org.springframework.stereotype.Service;
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements SysUserService {
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final JwtUtil jwtUtil;
+
+    public SysUserServiceImpl(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
 
     @Override
     public void register(UserRegisterDTO dto) {
@@ -32,7 +39,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
-    public UserVO login(LoginDTO dto) {
+    public LoginVO login(LoginDTO dto) {
         SysUser user = lambdaQuery().eq(SysUser::getUsername, dto.getUsername()).one();
         // 用户不存在与密码错误统一提示，避免暴露账号是否存在
         if (user == null || !passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
@@ -41,6 +48,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (user.getStatus() != null && user.getStatus() == 0) {
             throw new BizException("账号已被禁用");
         }
-        return UserVO.of(user);
+        String token = jwtUtil.createToken(user.getId(), user.getUsername());
+        return new LoginVO(token, UserVO.of(user));
     }
 }
