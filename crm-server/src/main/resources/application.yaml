@@ -1,10 +1,27 @@
 spring:
   application:
     name: crm-server
+  # 未显式指定profile时默认走local，避免忘配profile导致${mysql.url}解析失败
+  profiles:
+    default: local
   datasource:
     url: ${mysql.url}
     username: ${mysql.username}
     password: ${mysql.password}
 mybatis-plus:
   configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    # SQL日志走Slf4j：local下mapper包DEBUG可见，prod由profile覆盖关闭
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+  global-config:
+    db-config:
+      id-type: assign_id
+jwt:
+  secret: ${jwt.secret}
+  expire-hours: ${jwt.expire-hours}
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
