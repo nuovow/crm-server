@@ -6,9 +6,13 @@ import com.nuo.crmserver.dto.UserRegisterDTO;
 import com.nuo.crmserver.entity.SysUser;
 import com.nuo.crmserver.vo.LoginVO;
 
+import java.util.List;
+
 public interface SysUserService extends IService<SysUser> {
 
     void register(UserRegisterDTO dto);
 
     LoginVO login(LoginDTO dto);
+
+    List<String> getPermissions(Long userId);
 }

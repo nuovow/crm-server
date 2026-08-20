@@ -6,6 +6,7 @@ import com.nuo.crmserver.dto.LoginDTO;
 import com.nuo.crmserver.dto.UserRegisterDTO;
 import com.nuo.crmserver.entity.SysUser;
 import com.nuo.crmserver.exceptions.BizException;
+import com.nuo.crmserver.mapper.SysMenuMapper;
 import com.nuo.crmserver.mapper.SysUserMapper;
 import com.nuo.crmserver.service.SysUserService;
 import com.nuo.crmserver.util.JwtUtil;
@@ -14,14 +15,18 @@ import com.nuo.crmserver.vo.UserVO;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements SysUserService {
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final JwtUtil jwtUtil;
+    private final SysMenuMapper sysMenuMapper;
 
-    public SysUserServiceImpl(JwtUtil jwtUtil) {
+    public SysUserServiceImpl(JwtUtil jwtUtil, SysMenuMapper sysMenuMapper) {
         this.jwtUtil = jwtUtil;
+        this.sysMenuMapper = sysMenuMapper;
     }
 
     @Override
@@ -49,6 +54,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw new BizException("账号已被禁用");
         }
         String token = jwtUtil.createToken(user.getId(), user.getUsername());
-        return new LoginVO(token, UserVO.of(user));
+        return new LoginVO(token, UserVO.of(user), getPermissions(user.getId()));
+    }
+
+    @Override
+    public List<String> getPermissions(Long userId) {
+        return sysMenuMapper.selectPermissionsByUserId(userId);
     }
 }
