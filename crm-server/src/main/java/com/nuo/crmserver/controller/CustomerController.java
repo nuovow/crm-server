@@ -8,6 +8,7 @@ import com.nuo.crmserver.entity.Customer;
 import com.nuo.crmserver.service.CustomerService;
 import com.nuo.crmserver.vo.CustomerVO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -40,7 +41,7 @@ public class CustomerController {
      * 新增客户
      */
     @PostMapping
-    public Result<Void> saveCustomer(@RequestBody CustomerSaveDTO dto) {
+    public Result<Void> saveCustomer(@Validated @RequestBody CustomerSaveDTO dto) {
         customerService.saveCustomer(dto);
         return Result.success();
     }
@@ -49,7 +50,7 @@ public class CustomerController {
      * 根据ID修改客户
      */
     @PutMapping
-    public Result<Void> updateCustomer(@RequestBody CustomerSaveDTO dto) {
+    public Result<Void> updateCustomer(@Validated @RequestBody CustomerSaveDTO dto) {
         customerService.updateCustomer(dto);
         return Result.success();
     }
