@@ -1,12 +1,14 @@
 package com.nuo.crmserver.controller;
 
-import com.nuo.crmserver.Service.CustomerService;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.nuo.crmserver.common.Result;
+import com.nuo.crmserver.dto.CustomerQuery;
+import com.nuo.crmserver.dto.CustomerSaveDTO;
 import com.nuo.crmserver.entity.Customer;
+import com.nuo.crmserver.service.CustomerService;
+import com.nuo.crmserver.vo.CustomerVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/customer")
@@ -16,48 +18,48 @@ public class CustomerController {
     private final CustomerService customerService;
 
     /**
-     * 查询客户列表
+     * 分页查询客户
      */
-    @GetMapping
-    public Result<List<Customer>> getAllCustomers(){
-        List<Customer> customers = customerService.list();
-        return Result.success(customers);
+    @GetMapping("/page")
+    public Result<Page<CustomerVO>> page(CustomerQuery query) {
+        Page<Customer> page = customerService.pageByQuery(query);
+        Page<CustomerVO> voPage = new Page<>(page.getCurrent(), page.getSize(), page.getTotal());
+        voPage.setRecords(page.getRecords().stream().map(CustomerVO::of).toList());
+        return Result.success(voPage);
     }
 
     /**
      * 根据ID查询单个客户
      */
     @GetMapping("/{id}")
-    public Result<Customer> getCustomerById(@PathVariable Long id){
-        Customer byId = customerService.getById(id);
-        return Result.success(byId);
+    public Result<CustomerVO> getCustomer(@PathVariable Long id) {
+        return Result.success(CustomerVO.of(customerService.getCustomerById(id)));
     }
 
     /**
      * 新增客户
      */
     @PostMapping
-    public Result<Void> addCustomer(@RequestBody Customer customer){
-        customerService.save(customer);
+    public Result<Void> saveCustomer(@RequestBody CustomerSaveDTO dto) {
+        customerService.saveCustomer(dto);
         return Result.success();
     }
 
     /**
-     * 根据ID修改客户（全量更新）
+     * 根据ID修改客户
      */
     @PutMapping
-    public Result<Void> updateCustomer(@RequestBody Customer customer){
-        customerService.updateById(customer);
+    public Result<Void> updateCustomer(@RequestBody CustomerSaveDTO dto) {
+        customerService.updateCustomer(dto);
         return Result.success();
     }
 
     /**
-     * 根据ID删除客户
+     * 根据ID删除客户（逻辑删除）
      */
     @DeleteMapping("/{id}")
-    public Result<Void> deleteCustomer(@PathVariable Long id){
+    public Result<Void> deleteCustomer(@PathVariable Long id) {
         customerService.removeById(id);
         return Result.success();
     }
-
 }
