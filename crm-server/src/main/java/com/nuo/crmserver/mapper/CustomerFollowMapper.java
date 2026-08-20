@@ -38,4 +38,19 @@ public interface CustomerFollowMapper extends BaseMapper<CustomerFollow> {
             ORDER BY f.next_time
             """)
     List<CustomerFollowVO> selectTodayFollowList();
+
+    @Select("""
+            SELECT f.id, f.customer_id AS customerId, f.contact_id AS contactId,
+                   f.follow_type AS followType, f.content, f.next_time AS nextTime,
+                   f.create_time AS createTime, f.operator,
+                   u.nickname AS operatorName, c.name AS customerName
+            FROM customer_follow f
+            LEFT JOIN sys_user u ON u.id = f.operator
+            LEFT JOIN customer c ON c.id = f.customer_id
+            WHERE f.deleted = 0 AND c.deleted = 0
+              AND f.next_time IS NOT NULL
+              AND f.next_time < CURDATE() + INTERVAL 1 DAY
+            ORDER BY f.next_time
+            """)
+    List<CustomerFollowVO> selectDueFollowList();
 }
