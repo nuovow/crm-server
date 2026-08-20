@@ -1,19 +1,28 @@
 package com.nuo.crmserver.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
+import com.nuo.crmserver.common.UserContext;
 import com.nuo.crmserver.dto.LoginDTO;
+import com.nuo.crmserver.dto.UserPageQuery;
 import com.nuo.crmserver.dto.UserRegisterDTO;
 import com.nuo.crmserver.entity.SysUser;
+import com.nuo.crmserver.entity.SysUserRole;
 import com.nuo.crmserver.exceptions.BizException;
 import com.nuo.crmserver.mapper.SysMenuMapper;
 import com.nuo.crmserver.mapper.SysUserMapper;
+import com.nuo.crmserver.mapper.SysUserRoleMapper;
 import com.nuo.crmserver.service.SysUserService;
 import com.nuo.crmserver.util.JwtUtil;
 import com.nuo.crmserver.vo.LoginVO;
+import com.nuo.crmserver.vo.SysUserVO;
 import com.nuo.crmserver.vo.UserVO;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,10 +32,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final JwtUtil jwtUtil;
     private final SysMenuMapper sysMenuMapper;
+    private final SysUserRoleMapper sysUserRoleMapper;
 
-    public SysUserServiceImpl(JwtUtil jwtUtil, SysMenuMapper sysMenuMapper) {
+    public SysUserServiceImpl(JwtUtil jwtUtil, SysMenuMapper sysMenuMapper, SysUserRoleMapper sysUserRoleMapper) {
         this.jwtUtil = jwtUtil;
         this.sysMenuMapper = sysMenuMapper;
+        this.sysUserRoleMapper = sysUserRoleMapper;
     }
 
     @Override
@@ -60,5 +71,70 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public List<String> getPermissions(Long userId) {
         return sysMenuMapper.selectPermissionsByUserId(userId);
+    }
+
+    @Override
+    public Page<SysUserVO> pageByQuery(UserPageQuery query) {
+        Page<SysUser> page = lambdaQuery()
+                .like(StrUtil.isNotBlank(query.getUsername()), SysUser::getUsername, query.getUsername())
+                .eq(query.getStatus() != null, SysUser::getStatus, query.getStatus())
+                .orderByDesc(SysUser::getCreateTime)
+                .page(new Page<>(query.getPageNum(), query.getPageSize()));
+        Page<SysUserVO> voPage = new Page<>(page.getCurrent(), page.getSize(), page.getTotal());
+        voPage.setRecords(page.getRecords().stream().map(SysUserVO::of).toList());
+        return voPage;
+    }
+
+    @Override
+    public void updateStatus(Long id, Integer status) {
+        if (id.equals(UserContext.getUserId())) {
+            throw new BizException("不能禁用当前登录账号");
+        }
+        if (id == 1L) {
+            throw new BizException("内置管理员不允许禁用");
+        }
+        SysUser update = new SysUser();
+        update.setId(id);
+        update.setStatus(status);
+        if (!updateById(update)) {
+            throw new BizException("用户不存在");
+        }
+    }
+
+    @Override
+    public void deleteUser(Long id) {
+        if (id.equals(UserContext.getUserId())) {
+            throw new BizException("不能删除当前登录账号");
+        }
+        if (id == 1L) {
+            throw new BizException("内置管理员不允许删除");
+        }
+        if (!removeById(id)) {
+            throw new BizException("用户不存在");
+        }
+        sysUserRoleMapper.delete(new LambdaQueryWrapper<SysUserRole>().eq(SysUserRole::getUserId, id));
+    }
+
+    @Override
+    public List<Long> getRoleIds(Long userId) {
+        if (getById(userId) == null) {
+            throw new BizException("用户不存在");
+        }
+        return sysUserRoleMapper.selectList(
+                        new LambdaQueryWrapper<SysUserRole>().eq(SysUserRole::getUserId, userId))
+                .stream().map(SysUserRole::getRoleId).toList();
+    }
+
+    @Override
+    @Transactional
+    public void assignRoles(Long userId, List<Long> roleIds) {
+        if (getById(userId) == null) {
+            throw new BizException("用户不存在");
+        }
+        sysUserRoleMapper.delete(new LambdaQueryWrapper<SysUserRole>().eq(SysUserRole::getUserId, userId));
+        if (roleIds != null && !roleIds.isEmpty()) {
+            roleIds.forEach(roleId ->
+                    sysUserRoleMapper.insert(new SysUserRole(null, userId, roleId, null)));
+        }
     }
 }

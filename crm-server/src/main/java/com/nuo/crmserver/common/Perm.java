@@ -10,4 +10,18 @@ public interface Perm {
     String CUSTOMER_DELETE = "customer:delete";
     String CUSTOMER_EXPORT = "customer:export";
     String CUSTOMER_IMPORT = "customer:import";
+
+    String USER_ADD        = "user:add";
+    String USER_EDIT       = "user:edit";
+    String USER_DELETE     = "user:delete";
+    String USER_ASSIGN     = "user:assignRole";
+
+    String ROLE_ADD        = "role:add";
+    String ROLE_EDIT       = "role:edit";
+    String ROLE_DELETE     = "role:delete";
+    String ROLE_ASSIGN     = "role:assignMenu";
+
+    String DICT_ADD        = "dict:add";
+    String DICT_EDIT       = "dict:edit";
+    String DICT_DELETE     = "dict:delete";
 }
