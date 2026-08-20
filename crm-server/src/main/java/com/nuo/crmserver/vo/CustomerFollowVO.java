@@ -27,6 +27,11 @@ public class CustomerFollowVO {
     private String followType;
     private String content;
     private LocalDateTime nextTime;
+
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long operator;
+    private String operatorName;
+    private String customerName;
     private LocalDateTime createTime;
 
     public static CustomerFollowVO of(CustomerFollow follow) {

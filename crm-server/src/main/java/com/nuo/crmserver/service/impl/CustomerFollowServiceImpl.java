@@ -48,12 +48,6 @@ public class CustomerFollowServiceImpl extends ServiceImpl<CustomerFollowMapper,
         if (customerMapper.selectById(customerId) == null) {
             throw new BizException("客户不存在");
         }
-        return lambdaQuery()
-                .eq(CustomerFollow::getCustomerId, customerId)
-                .orderByDesc(CustomerFollow::getCreateTime)
-                .list()
-                .stream()
-                .map(CustomerFollowVO::of)
-                .toList();
+        return baseMapper.selectFollowList(customerId);
     }
 }

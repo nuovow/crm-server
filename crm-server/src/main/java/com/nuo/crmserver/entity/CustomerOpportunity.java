@@ -1,5 +1,7 @@
 package com.nuo.crmserver.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.AllArgsConstructor;
@@ -29,6 +31,10 @@ public class CustomerOpportunity {
     private String stage;
     private LocalDate expectedDate;
     private String remark;
+    @TableField(fill = FieldFill.INSERT)
+    private Long createBy;
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private Long updateBy;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
     @TableLogic
