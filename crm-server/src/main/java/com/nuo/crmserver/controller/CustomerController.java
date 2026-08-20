@@ -2,6 +2,8 @@ package com.nuo.crmserver.controller;
 
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.nuo.crmserver.common.Perm;
+import com.nuo.crmserver.common.RequirePermission;
 import com.nuo.crmserver.common.Result;
 import com.nuo.crmserver.dto.CustomerQuery;
 import com.nuo.crmserver.dto.CustomerSaveDTO;
@@ -48,6 +50,7 @@ public class CustomerController {
     /**
      * 新增客户
      */
+    @RequirePermission(Perm.CUSTOMER_ADD)
     @PostMapping
     public Result<Void> saveCustomer(@Validated @RequestBody CustomerSaveDTO dto) {
         customerService.saveCustomer(dto);
@@ -57,6 +60,7 @@ public class CustomerController {
     /**
      * 根据ID修改客户
      */
+    @RequirePermission(Perm.CUSTOMER_EDIT)
     @PutMapping
     public Result<Void> updateCustomer(@Validated @RequestBody CustomerSaveDTO dto) {
         customerService.updateCustomer(dto);
@@ -66,12 +70,14 @@ public class CustomerController {
     /**
      * 根据ID删除客户（逻辑删除）
      */
+    @RequirePermission(Perm.CUSTOMER_DELETE)
     @DeleteMapping("/{id}")
     public Result<Void> deleteCustomer(@PathVariable Long id) {
         customerService.removeById(id);
         return Result.success();
     }
 
+    @RequirePermission(Perm.CUSTOMER_EXPORT)
     @GetMapping("/export")
     public void exportCustomer(HttpServletResponse response) throws IOException {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
@@ -85,6 +91,7 @@ public class CustomerController {
     /**
      * Excel批量导入客户：部分成功语义——合法行入库，非法行返回明细
      */
+    @RequirePermission(Perm.CUSTOMER_IMPORT)
     @PostMapping("/import")
     public Result<ImportResult> importCustomers(@RequestParam("file") MultipartFile file) {
         return Result.success(customerService.importCustomers(file));
