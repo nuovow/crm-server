@@ -13,20 +13,22 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Customer {
+public class CustomerFollow {
+
     @TableId
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
-    private String name;
-    private String industry;
-    private String source;
-    private String level;
-    private String phone;
-    private String remark;
-    private LocalDateTime lastFollowTime;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long customerId;
+
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long contactId;
+
+    private String followType;
+    private String content;
+    private LocalDateTime nextTime;
     private LocalDateTime createTime;
-    private LocalDateTime updateTime;
     @TableLogic
     private Integer deleted;
 }
