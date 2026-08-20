@@ -22,3 +22,10 @@ INSERT INTO customer_follow (id, customer_id, contact_id, follow_type, content, 
 (1962847401234568003, 1962847301234567002, NULL, 'WECHAT', '微信发报价单，等待对方内部审批', '2026-08-21 14:00:00');
 UPDATE customer SET last_follow_time = '2026-08-20 15:00:00' WHERE id = 1962847301234567001;
 UPDATE customer SET last_follow_time = '2026-08-19 11:00:00' WHERE id = 1962847301234567002;
+
+-- 商机测试数据（M1-T05）
+INSERT INTO customer_opportunity (id, customer_id, title, amount, stage, expected_date, remark) VALUES
+(1962847501234569001, 1962847301234567001, '华辰智造ERP采购项目', 500000.00, 'NEGOTIATION', '2026-09-30', '竞争对手为本地集成商，价格战风险'),
+(1962847501234569002, 1962847301234567001, '华辰智造数据大屏二期', 120000.00, 'INITIAL', '2026-11-15', NULL),
+(1962847501234569003, 1962847301234567002, '蓝海信息标准版订阅', 80000.00, 'PROPOSAL', '2026-08-31', '首年订阅，看能否谈三年长约'),
+(1962847501234569004, 1962847301234567004, '绿源集团集团版框架采购', 1200000.00, 'WON', '2026-08-10', '已签约，交付周期3个月');
