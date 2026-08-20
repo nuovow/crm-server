@@ -1,5 +1,7 @@
 package com.nuo.crmserver.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.AllArgsConstructor;
@@ -28,6 +30,8 @@ public class CustomerFollow {
     private String followType;
     private String content;
     private LocalDateTime nextTime;
+    @TableField(fill = FieldFill.INSERT)
+    private Long operator;
     private LocalDateTime createTime;
     @TableLogic
     private Integer deleted;
