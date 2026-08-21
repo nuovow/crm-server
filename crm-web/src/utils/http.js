@@ -19,6 +19,9 @@ http.interceptors.request.use(
 
 http.interceptors.response.use(
   (response) => {
+    if (response.config.responseType === 'blob') {
+      return response.data
+    }
     if (response.data.code !== 200) {
       ElMessage.error(response.data.message)
       return Promise.reject(response.data)
