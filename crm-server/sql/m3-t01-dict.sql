@@ -17,16 +17,17 @@ CREATE TABLE sys_dict (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='数据字典表';
 
 -- 种子数据：level的value与customer.level列取值对齐；source的value与现有测试数据中文取值对齐
-INSERT INTO sys_dict (type, label, value, sort) VALUES
-('customer_level', 'A级（重点客户）', 'A', 1),
-('customer_level', 'B级（普通客户）', 'B', 2),
-('customer_level', 'C级（潜在客户）', 'C', 3),
-('customer_level', 'D级（无效客户）', 'D', 4),
-('customer_source', '官网留言', '官网留言', 1),
-('customer_source', '展会获客', '展会获客', 2),
-('customer_source', '老客户转介绍', '老客户转介绍', 3),
-('customer_source', '广告投放', '广告投放', 4),
-('customer_source', '电话陌拜', '电话陌拜', 5);
+-- 注意：实体用雪花ID（应用层生成），SQL种子必须显式给id，否则NOT NULL无默认值会报1364
+INSERT INTO sys_dict (id, type, label, value, sort) VALUES
+(1, 'customer_level', 'A级（重点客户）', 'A', 1),
+(2, 'customer_level', 'B级（普通客户）', 'B', 2),
+(3, 'customer_level', 'C级（潜在客户）', 'C', 3),
+(4, 'customer_level', 'D级（无效客户）', 'D', 4),
+(5, 'customer_source', '官网留言', '官网留言', 1),
+(6, 'customer_source', '展会获客', '展会获客', 2),
+(7, 'customer_source', '老客户转介绍', '老客户转介绍', 3),
+(8, 'customer_source', '广告投放', '广告投放', 4),
+(9, 'customer_source', '电话陌拜', '电话陌拜', 5);
 
 -- 菜单：字典管理挂在用户管理目录(200)下，与用户列表(201)/角色管理(202)并列
 INSERT INTO sys_menu (id, parent_id, name, type, permission, path, sort) VALUES
